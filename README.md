@@ -4,7 +4,7 @@ ASUS RT-AC86U (Merlin) VLANs enable test script
 The source of the script is coming from the link https://virtualize.link/asus-vlans/
 I intend to record down the modified script in case I forgot what I did on the router.
 
-=================================== (Start) Copy from the web origin ===================================
+=============================== (Start) Copy from the web origin ================================
 Reasons for using an Asus router:
 
     - Not cloud connected
@@ -55,4 +55,4 @@ If the router doesn't boot after making the changes, you can revert it to factor
 
 
 
-=================================== (End) Copy from the web origin ===================================
+================================= (End) Copy from the web origin =================================
