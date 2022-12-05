@@ -1,0 +1,38 @@
+#
+#
+# The following script assumes the layout above and creates 2 VLANs:
+# 
+#     227 - LAN ports 1-4, Main wifi 2.5Ghz, Main wifi 5Ghz
+#     11 (with client isolation) - Guest wifi 2.5Ghz, Guest wifi 5Ghz
+# 
+# Change the script according to your router model's layout and needs.
+#
+###############################(Start)##################################
+#!/bin/sh
+
+brctl delif br0 eth4
+brctl delif br0 wl0.1
+brctl delif br0 wl1.1
+ip link add link eth4 name eth4.227 type vlan id 227
+ip link add link eth4 name eth4.11 type vlan id 11
+ip link set eth4.227 up
+ip link set eth4.11 up
+brctl addif br0 eth4.227
+brctl addbr br1
+brctl addif br1 eth4.11
+brctl addif br1 wl0.1
+brctl addif br1 wl1.1
+ip link set br1 up
+nvram set lan_ifnames="eth0 eth1 eth2 eth3 eth5 eth6 eth4.227"
+nvram set lan1_ifnames="wl0.1 wl1.1 eth4.11"
+nvram set lan1_ifname="br1"
+nvram set br0_ifnames="eth0 eth1 eth2 eth3 eth5 eth6 eth4.227"
+nvram set br1_ifnames="wl0.1 wl1.1 eth4.11"
+nvram set br1_ifname="br1"
+nvram set wl0.1_ap_isolate="1"
+nvram set wl1.1_ap_isolate="1"
+killall eapd
+eapd
+ethswctl -c hw-switch
+
+################################(End)###################################
