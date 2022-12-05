@@ -1,38 +1,81 @@
+############################### (Intro) ##################################
+# The following script assumes the layout require creates 3 seperate VLANs:
 #
+#     100 (Skip if VLAN 1) - LAN ports 1-4, Main wifi 2.5Ghz, Main wifi 5Ghz
+#     200 (with client isolation) - Guest wifi 2.5Ghz, Guest wifi 5Ghz
+#     300 (with client isolation) - IoT wifi 2.5Ghz
 #
-# The following script assumes the layout require creates 2 seperate VLANs:
-# 
-#     227 - LAN ports 1-4, Main wifi 2.5Ghz, Main wifi 5Ghz
-#     11 (with client isolation) - Guest wifi 2.5Ghz, Guest wifi 5Ghz
-# 
 # Change the script according to your router model's layout and needs.
+#
+#	For example:
+#	
+#	    eth0 - WAN
+#	    eth1 - LAN 4 (Home-LAN)
+#	    eth2 - LAN 3 (Home-LAN)
+#	    eth3 - LAN 2 (Home-LAN)
+#	    eth4 - LAN 1 (Home-LAN)
+#	    eth5 - Main wifi 2.4Ghz (Home-LAN)
+#	    eth6 - Main wifi 5Ghz (Home-LAN)
+#	    wl0.1 - Guest wifi 2.4Ghz (Guest)
+#	    wl0.2 - I wifi 2.4Ghz (IoT)
+#	    wl1.1 - Guest wifi 5Ghz (Guest)
 #
 ############################### (Start) ##################################
 #!/bin/sh
 
-brctl delif br0 eth4
+brctl delif br0 eth0
 brctl delif br0 wl0.1
 brctl delif br0 wl1.1
-ip link add link eth4 name eth4.227 type vlan id 227
-ip link add link eth4 name eth4.11 type vlan id 11
-ip link set eth4.227 up
-ip link set eth4.11 up
-brctl addif br0 eth4.227
+brctl delif br0 wl0.2
+
+#ip link add link eth0 name eth0.v100 type vlan id 100
+ip link add link eth0 name eth0.v200 type vlan id 200
+ip link add link eth0 name eth0.v300 type vlan id 300
+
+#ip link set eth0.v100 up
+ip link set eth0.v200 up
+ip link set eth0.v300 up
+
+#brctl addif br0 eth0.v100
+
 brctl addbr br1
-brctl addif br1 eth4.11
+brctl addif br1 eth0.v200
 brctl addif br1 wl0.1
 brctl addif br1 wl1.1
 ip link set br1 up
-nvram set lan_ifnames="eth0 eth1 eth2 eth3 eth5 eth6 eth4.227"
-nvram set lan1_ifnames="wl0.1 wl1.1 eth4.11"
+
+brctl addbr br2
+brctl addif br2 eth0.v300
+brctl addif br2 wl0.2
+ip link set br2 up
+
+
+# Adjust NVRAM config
+nvram set lan_ifnames="eth0 eth1 eth2 eth3 eth4 eth5 eth6"
+nvram set br0_ifnames="eth0 eth1 eth2 eth3 eth4 eth5 eth6"
+#nvram set lan_ifnames="eth0.v100 eth1 eth2 eth3 eth4 eth5 eth6"
+#nvram set br0_ifnames="eth0.v100 eth1 eth2 eth3 eth4 eth5 eth6"
+
 nvram set lan1_ifname="br1"
-nvram set br0_ifnames="eth0 eth1 eth2 eth3 eth5 eth6 eth4.227"
-nvram set br1_ifnames="wl0.1 wl1.1 eth4.11"
+nvram set lan1_ifnames=" eth0.v200 wl0.1 wl1.1"
 nvram set br1_ifname="br1"
+nvram set br1_ifnames="eth0.v200 wl0.1 wl1.1"
+
+nvram set lan2_ifname="br2"
+nvram set lan2_ifnames=" eth0.v300 wl0.2"
+nvram set br2_ifname="br2"
+nvram set br2_ifnames="eth0.v300 wl0.2"
+
 nvram set wl0.1_ap_isolate="1"
 nvram set wl1.1_ap_isolate="1"
+nvram set wl0.2_ap_isolate="1"
+
+# eapd restart (when change NVRAM, it's necessary)
 killall eapd
 eapd
+
+# So, the last step, if you want to communicate between LAN interfaces (1 to 4), you must disable HW Switching (this will increase the CPU usage, but my tests showed you can reach 1Gbps with no problem).
+# ethswctl -c hw-switching -o disable
 ethswctl -c hw-switch
 
 ################################ (End) ###################################
