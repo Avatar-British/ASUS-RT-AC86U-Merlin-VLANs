@@ -22,11 +22,14 @@ Steps
     - Install Asus-Merlin on the router
     - Set the router to AP mode
     - Enable Administration > System > Enable JFFS custom scripts and configs
+    - Enable SSH for allowing access to the router CLI
     - Set the router to a static IP instead of DHCP
     - Create all needed guest networks, in this example there will be Guest 2.5Ghz and Guest 5Ghz
-    - Save the script to /jffs/scripts/services-start after it's done
-    - Set chmod a+x /jffs/scripts/services-start
-    - Reboot the router to apply changes
+    - You can use 'nano /jffs/scripts/services-start' to start create the script file
+    - Save the script to '/jffs/scripts/services-start' after it's done
+    - Set chmod a+rx /jffs/scripts/services-start
+    - Type 'reboot' the router to apply changes
+    - Once configuration confirmed successful, please disable the SSH access to be safe.
 
 
 Discovery
