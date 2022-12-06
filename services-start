@@ -28,15 +28,15 @@ brctl delif br0 wl0.1
 brctl delif br0 wl1.1
 brctl delif br0 wl0.2
 
-#ip link add link eth0 name eth0.v100 type vlan id 100
+ip link add link eth0 name eth0.v100 type vlan id 100
 ip link add link eth0 name eth0.v200 type vlan id 200
 ip link add link eth0 name eth0.v300 type vlan id 300
 
-#ip link set eth0.v100 up
+ip link set eth0.v100 up
 ip link set eth0.v200 up
 ip link set eth0.v300 up
 
-#brctl addif br0 eth0.v100
+brctl addif br0 eth0.v100
 
 brctl addbr br1
 brctl addif br1 eth0.v200
@@ -51,18 +51,18 @@ ip link set br2 up
 
 
 # Adjust NVRAM config
-nvram set lan_ifnames="eth0 eth1 eth2 eth3 eth4 eth5 eth6"
-nvram set br0_ifnames="eth0 eth1 eth2 eth3 eth4 eth5 eth6"
-#nvram set lan_ifnames="eth0.v100 eth1 eth2 eth3 eth4 eth5 eth6"
-#nvram set br0_ifnames="eth0.v100 eth1 eth2 eth3 eth4 eth5 eth6"
+#nvram set lan_ifnames="eth0 eth1 eth2 eth3 eth4 eth5 eth6"
+#nvram set br0_ifnames="eth0 eth1 eth2 eth3 eth4 eth5 eth6"
+nvram set lan_ifnames="eth0.v100 eth1 eth2 eth3 eth4 eth5 eth6"
+nvram set br0_ifnames="eth0.v100 eth1 eth2 eth3 eth4 eth5 eth6"
 
 nvram set lan1_ifname="br1"
-nvram set lan1_ifnames=" eth0.v200 wl0.1 wl1.1"
+nvram set lan1_ifnames="eth0.v200 wl0.1 wl1.1"
 nvram set br1_ifname="br1"
 nvram set br1_ifnames="eth0.v200 wl0.1 wl1.1"
 
 nvram set lan2_ifname="br2"
-nvram set lan2_ifnames=" eth0.v300 wl0.2"
+nvram set lan2_ifnames="eth0.v300 wl0.2"
 nvram set br2_ifname="br2"
 nvram set br2_ifnames="eth0.v300 wl0.2"
 
